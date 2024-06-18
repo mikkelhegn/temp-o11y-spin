@@ -7,15 +7,15 @@ authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
 description = ""
 
 [[trigger.http]]
-route = "/test"
-component = "test"
+route = "/rust"
+component = "rust"
 
-[component.test]
-source = "target/wasm32-wasi/release/test.wasm"
-allowed_outbound_hosts = ["http://*.spin.internal"]
+[component.rust]
+source = "rust/target/wasm32-wasi/release/test.wasm"
 key_value_stores = ["default"]
-[component.test.build]
+[component.rust.build]
 command = "cargo build --target wasm32-wasi --release"
+workdir = "rust"
 watch = ["src/**/*.rs", "Cargo.toml"]
 
 [[trigger.http]]
@@ -24,7 +24,6 @@ component = "go"
 
 [component.go]
 source = "go/main.wasm"
-allowed_outbound_hosts = ["http://*.spin.internal"]
 key_value_stores = ["default"]
 [component.go.build]
 command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm main.go"
@@ -37,7 +36,6 @@ component = "ts"
 
 [component.ts]
 source = "ts/target/ts.wasm"
-allowed_outbound_hosts = ["http://localhost:3000"]
 key_value_stores = ["default"]
 
 [component.ts.build]
@@ -51,7 +49,6 @@ component = "py"
 [component.py]
 source = "py/app.wasm"
 key_value_stores = ["default"]
-allowed_outbound_hosts = ["http://*.spin.internal"]
 [component.py.build]
 command = "componentize-py -w spin-http componentize app -o app.wasm"
 workdir = "py"

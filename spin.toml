@@ -1,0 +1,59 @@
+spin_manifest_version = 2
+
+[application]
+name = "test"
+version = "0.1.0"
+authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/test"
+component = "test"
+
+[component.test]
+source = "target/wasm32-wasi/release/test.wasm"
+allowed_outbound_hosts = ["http://*.spin.internal"]
+key_value_stores = ["default"]
+[component.test.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
+
+[[trigger.http]]
+route = "/go"
+component = "go"
+
+[component.go]
+source = "go/main.wasm"
+allowed_outbound_hosts = ["http://*.spin.internal"]
+key_value_stores = ["default"]
+[component.go.build]
+command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm main.go"
+workdir = "go"
+watch = ["**/*.go", "go.mod"]
+
+[[trigger.http]]
+route = "/ts"
+component = "ts"
+
+[component.ts]
+source = "ts/target/ts.wasm"
+allowed_outbound_hosts = ["http://localhost:3000"]
+key_value_stores = ["default"]
+
+[component.ts.build]
+command = "npm run build"
+workdir = "ts"
+
+[[trigger.http]]
+route = "/py"
+component = "py"
+
+[component.py]
+source = "py/app.wasm"
+key_value_stores = ["default"]
+allowed_outbound_hosts = ["http://*.spin.internal"]
+[component.py.build]
+command = "componentize-py -w spin-http componentize app -o app.wasm"
+workdir = "py"
+watch = ["*.py", "requirements.txt"]
+
